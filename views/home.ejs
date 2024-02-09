@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>home</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      border-color: beige;
+    }
+    nav {
+      background-color: #141a3c;
+      color: #fff;
+      padding: 10px 20px;
+    }
+    nav ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+    }
+    nav ul li {
+      margin-right: 20px;
+    }
+    nav ul li:last-child {
+      margin-right: 0;
+    }
+    nav ul li a {
+      color: #fff;
+      text-decoration: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+    nav ul li a:hover {
+      background-color: #555;
+    }
+    .question {
+      margin-bottom: 20px;
+    }
+    #quiz_container{
+        padding:10px 20px;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <ul>
+      <li><a href="/">Login</a></li>
+      <li><a href="/signup">Signup</a></li>
+      <li><a href="/attempt">Attempt</a></li>
+      <li><a href="/logout">logout</a></li>
+    </ul>
+  </nav>
+  <div>
+    <%if(locals.user){%>
+        <h1>welcome user <%= user.name %></h1>
+    <%} %>
+        <button onclick="getQuestions()">
+            Try quiz
+        </button>
+    <div id="quiz_container">
+      <!-- Questions will be dynamically added here -->
+    </div>  
+  </div>
+  <script>
+    // Function to display questions
+  
+    function showQuestions(questions) {
+        const quizContainer = document.getElementById('quiz_container');
+
+        questions.forEach((questionObj, index) => {
+            const questionDiv = document.createElement('div');
+            questionDiv.classList.add('question');
+
+            // Add question index
+            const questionIndex = document.createElement('span');
+            questionIndex.textContent = 'Question ' + (index + 1);
+            questionDiv.appendChild(questionIndex);
+
+            const questionHeading = document.createElement('h3');
+            questionHeading.textContent = questionObj.question;
+            questionDiv.appendChild(questionHeading);
+
+            const optionsList = document.createElement('ul');
+            questionObj.option.forEach((option, optionIndex) => {
+                const optionItem = document.createElement('li');
+                
+                // Create checkbox for each option
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = 'q' + index + '_option' + optionIndex;
+                checkbox.name = 'q' + index + '_options';
+                optionItem.appendChild(checkbox);
+
+                // Create label for checkbox
+                const label = document.createElement('label');
+                label.htmlFor = 'q' + index + '_option' + optionIndex;
+                label.textContent = option;
+                optionItem.appendChild(label);
+
+                optionsList.appendChild(optionItem);
+            });
+            questionDiv.appendChild(optionsList);
+
+            quizContainer.appendChild(questionDiv);
+        });
+    }
+    // Fetch questions from the backend
+    async function getQuestions() {
+        try {
+            const response = await fetch("http://localhost:3000/allquestion");
+            const data = await response.json(); 
+            console.log(data.questions); 
+            showQuestions(data.questions);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    
+</script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>signup Page</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .signup-container {
+      background-color: #fff;
+      text-align: center;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .signup-container h2 {
+      text-align: center;
+    }
+    .signup-container input[type="text"],
+    .signup-container input[type="password"],
+    .signup-container input[type="submit"] ,select{
+      width: 60%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 3px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+    .signup-container input[type="submit"] {
+      background-color: #007bff;
+      color: #fff;
+      cursor: pointer;
+    }
+    .signup-container input[type="submit"]:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="signup-container">
+    <h2>signup</h2>
+    <form onsubmit="handleRegister(event)">
+      <input type="text" name="name" placeholder="enter user name" />
+      <input type="text" name="rollno" placeholder="enter user id" />
+      <input type="text" name="age" placeholder="enter age" />
+      <select name="gender">
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+        <option value="others">Others</option>
+      </select>
+      <input type="password" name="password" placeholder="enter password" />
+      <input type="submit" value="signup">
+    </form>
+    <h2>Already Have an account ? <a href="/">signup</a></h2>
+  </div>
+  <script>
+    async function handleRegister(event) {
+      event.preventDefault(); 
+      
+      // Get form data
+      const formData = new FormData(event.target);
+     
+      const formObject = Object.fromEntries(formData); 
+      
+      try {
+        const response = await fetch('http://localhost:3000/signup', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formObject) 
+        });
+
+        const data = await response.json();
+        const mydata=JSON.stringify(data);
+       alert("successfully registered");
+       window.location.href="/";
+      } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred during registration');
+      }
+    }
+  </script>
+</body>
+</html>
