@@ -73,7 +73,7 @@ router.get("/logout",(req,res)=>{
 router.get("/allquestion",async(req,res)=>{
     try {
         // Get all questions
-        const questions = await questionModel.aggregate([{$sample:{size:5}}]);
+        const questions = await questionModel.find().limit(5);
         console.log('All Questions:', questions.length);
         
         if (questions.length > 0) {

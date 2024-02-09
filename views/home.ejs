@@ -59,68 +59,119 @@
     <%if(locals.user){%>
         <h1>welcome user <%= user.name %></h1>
     <%} %>
-        <button onclick="getQuestions()">
+        <!-- <button onclick="getQuestions()">
             Try quiz
-        </button>
+        </button> -->
+        <div>attempt:<span id="attemptcount">0</span></div>
+        <div>score:<span id="scorecount">0</span></div>
     <div id="quiz_container">
       <!-- Questions will be dynamically added here -->
     </div>  
+    <button onclick="checkAnswer()" id="sub">Submit</button>
+    <button style="display:none" onclick="nextQuestion()" id="nQ">NextQuestions</button>
   </div>
   <script>
-    // Function to display questions
-  
-    function showQuestions(questions) {
-        const quizContainer = document.getElementById('quiz_container');
-
-        questions.forEach((questionObj, index) => {
+      // Function to display questions
+      
+      let ind=0;
+    let ans=[];
+    let correct=0;
+    let attempts=0;
+    var quizContainer = document.getElementById('quiz_container');
+    function showQuestions(questions,index) {
+        
+        // questions.forEach((questions, index) => {
             const questionDiv = document.createElement('div');
             questionDiv.classList.add('question');
-
-            // Add question index
+            questionDiv.dataset.quesId=questions._id;
+        
             const questionIndex = document.createElement('span');
             questionIndex.textContent = 'Question ' + (index + 1);
             questionDiv.appendChild(questionIndex);
 
             const questionHeading = document.createElement('h3');
-            questionHeading.textContent = questionObj.question;
+            questionHeading.textContent = questions.question;
             questionDiv.appendChild(questionHeading);
 
             const optionsList = document.createElement('ul');
-            questionObj.option.forEach((option, optionIndex) => {
+            questions.option.forEach((option, optionIndex) => {
                 const optionItem = document.createElement('li');
-                
-                // Create checkbox for each option
                 const checkbox = document.createElement('input');
                 checkbox.type = 'checkbox';
                 checkbox.id = 'q' + index + '_option' + optionIndex;
                 checkbox.name = 'q' + index + '_options';
+                checkbox.value=optionIndex;
                 optionItem.appendChild(checkbox);
-
-                // Create label for checkbox
                 const label = document.createElement('label');
                 label.htmlFor = 'q' + index + '_option' + optionIndex;
                 label.textContent = option;
                 optionItem.appendChild(label);
-
                 optionsList.appendChild(optionItem);
+                
             });
             questionDiv.appendChild(optionsList);
-
             quizContainer.appendChild(questionDiv);
-        });
+             ans.push(questions.correct);
+            // console.log("crrr" +questions.correct);
+        // });
+        console.log("ans "+ans);
     }
     // Fetch questions from the backend
+    let data;
     async function getQuestions() {
         try {
             const response = await fetch("http://localhost:3000/allquestion");
-            const data = await response.json(); 
-            console.log(data.questions); 
-            showQuestions(data.questions);
+            data = await response.json(); 
+            console.log(data.questions[0]);
+            showQuestions(data.questions[0],0);     
         } catch (error) {
             console.log(error);
         }
     }
-    
+    function nextQuestion(){
+        let n=data.questions.length;
+        ind++;
+        if(ind<n){
+            quizContainer.innerHTML="";
+            showQuestions(data.questions[ind],ind);
+            console.log(data.questions[ind]);
+        }else{
+            alert("quiz is end")
+        }
+        var nextbutton=document.getElementById("nQ")
+        var sub=document.getElementById("sub")
+  
+        sub.style.display="block";
+        nextbutton.style.display="none";
+    }
+    function checkAnswer(){
+        let correctans=parseInt(ans[ans.length-1]);
+        console.log("correct ans is "+correctans);
+        let questiondiv=document.querySelector(".question");
+        let selectindex=questiondiv.querySelectorAll("input[type='checkbox']:checked");
+        console.log("select index"+selectindex);
+        let checkIndex=[];
+        selectindex.forEach((checkbox)=>{
+           // console.log(checkbox);
+            checkIndex.push(parseInt(checkbox.value));
+        })
+        console.log("check ans "+checkIndex[0]);
+       if(correctans===checkIndex[0])
+       {
+        correct++;
+        
+       }
+       attempts++;
+       document.getElementById("scorecount").innerText=correct;
+       document.getElementById("attemptcount").innerText=attempts;
+        var nextbutton=document.getElementById("nQ")
+        var sub=document.getElementById("sub")
+         
+        sub.style.display="none";
+        nextbutton.style.display="block";
+        
+    }
+    getQuestions()
 </script>
 </body>
 </html>

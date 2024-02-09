@@ -15,7 +15,7 @@ app.set("view engine","ejs");
 const userRoutes=require("./routes/userRoutes");
 
 //connection to mongodb
-mongoose.connect("mongodb+srv://suvadip:suvadip@cluster0.sdnjhfv.mongodb.net/myquizapp").then(()=>{
+mongoose.connect("mongodb://127.0.0.1:27017/quizapp").then(()=>{
     console.log("connected to db");
     app.listen(3000,(err)=>{
         console.log("listening on port 3000");

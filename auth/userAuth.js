@@ -4,7 +4,7 @@ function userAuth(req, res, next) {
          next();
     }
     else {
-         res.redirect("/login");
+         res.redirect("/");
     }
 }
 module.exports=userAuth;
